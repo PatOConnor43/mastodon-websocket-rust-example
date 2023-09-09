@@ -1,0 +1,12 @@
+[package]
+name = "mastodon-listener"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.188", features = ["derive"] }
+serde_json = { version = "1.0.105", features = ["raw_value"] }
+tungstenite = { version = "0.20.0", features = ["native-tls"] }
+url = "2.4.1"
