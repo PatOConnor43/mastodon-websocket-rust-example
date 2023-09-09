@@ -107,28 +107,27 @@ pub struct Mention {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let domain = std::env::var("STREAMING_DOMAIN").unwrap();
-    let stream = std::env::var("STREAM").unwrap();
-    let token = std::env::var("ACCESS_TOKEN").unwrap();
+    let domain = std::env::var("STREAMING_DOMAIN").expect("Need to set STREAMING_DOMAIN env var");
+    let stream = std::env::var("STREAM").expect("Need to set STREAM env var");
+    let token = std::env::var("ACCESS_TOKEN").expect("Need to set ACCESS_TOKEN env var");
 
     let u = Url::parse(&format!(
         "{}/api/v1/streaming?stream={}&access_token={}",
         domain, stream, token
     ))
     .unwrap();
-    let (mut socket, response) = connect(u).unwrap();
+    let (mut socket, response) = connect(u)?;
     dbg!(response);
     loop {
-        let msg = socket.read().unwrap();
+        let msg = socket.read()?;
         if msg.is_text() {
-            let text = msg.into_text().unwrap();
-            let event = serde_json::from_str::<DirectMessageEvent>(text.as_str()).unwrap();
+            let text = msg.into_text()?;
+            let event = serde_json::from_str::<DirectMessageEvent>(text.as_str())?;
             dbg!(&event.payload);
             let deserialized_payload = json!(&event.payload);
             let deserialized_payload = serde_json::from_str::<DirectMessagePayload>(
                 deserialized_payload.as_str().unwrap(),
-            )
-            .unwrap();
+            )?;
             dbg!(&deserialized_payload);
         }
     }
